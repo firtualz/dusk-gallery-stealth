@@ -4,7 +4,7 @@
 // vendor/makefun-game.ts (unchanged). Node 22 standard library only.
 // Outside the grader, MAKEFUN_OUTPUT_DIR stands in for /output.
 
-import { cpSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
@@ -12,8 +12,6 @@ import { buildDossier } from './vendor/makefun-game.ts';
 const repoRoot = dirname(fileURLToPath(import.meta.url));
 const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
-// Start from an empty output directory so the two grader runs agree.
-rmSync(outputDir, { recursive: true, force: true });
 mkdirSync(outputDir, { recursive: true });
 
 // Copy the playable game and the screenshots, nothing else.
