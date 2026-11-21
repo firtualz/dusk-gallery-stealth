@@ -43,17 +43,24 @@ export function applyShot(state, shot) {
     state.status = 'HIDDEN';
     state.time = 12;
   } else if (shot === 'hide') {
-    // The player crouches behind the central display case while Lena's cone
-    // sweeps right past the cover. Status HIDDEN, meter 0.
+    // The combined stealth moment: the player crouches behind the central
+    // display case while Lena's cone sweeps right past the cover — and a
+    // coin just thrown lands ahead with its sound ripple visible, so Lena
+    // turns to investigate it ('?' over her head). One frame shows cover
+    // + the coin-distraction mechanic. Status HIDDEN, meter 0.
     state.phase = 'playing';
     player.x = 600;
     player.y = 470;
     player.angle = Math.PI;
     player.sneaking = true;
+    player.coins = 4; // one coin already thrown (the ripple on the floor)
+    // A fresh coin ripple: bornAt -1 draws it at a fixed visible age.
+    state.coins = [{ x: 790, y: 420, bornAt: -1 }];
     guards[1].x = 700;
-    guards[1].y = 360;
-    guards[1].angle = 2.0; // cone sweeps down-left, past the case at the player
-    guards[1].mode = 'patrol';
+    guards[1].y = 380;
+    guards[1].angle = 0.42; // facing the coin landing point
+    guards[1].mode = 'investigate';
+    guards[1].investigateTarget = { x: 790, y: 420 };
     guards[0].x = 300;
     guards[0].y = 210;
     guards[0].angle = 0;

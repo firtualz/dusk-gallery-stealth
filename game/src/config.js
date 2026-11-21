@@ -5,7 +5,7 @@ export const CANVAS_WIDTH = 1280;
 export const CANVAS_HEIGHT = 800;
 
 // --- Player ---------------------------------------------------------------
-export const PLAYER_RADIUS = 13;
+export const PLAYER_RADIUS = 16;
 export const PLAYER_WALK_SPEED = 155; // px per second
 export const PLAYER_SNEAK_SPEED = 72;
 export const PLAYER_START = { x: 110, y: 715 };
@@ -110,7 +110,7 @@ export const GUARD_DEFS = [
     ],
     speed: 72,
     range: 230,
-    color: '#3b5bdb',
+    color: '#5b8cff',
   },
   {
     name: 'Lena',
@@ -123,7 +123,7 @@ export const GUARD_DEFS = [
     ],
     speed: 62,
     range: 210,
-    color: '#7c3aed',
+    color: '#a855f7',
   },
   {
     name: 'Otto',
@@ -131,7 +131,7 @@ export const GUARD_DEFS = [
     waypoints: [{ x: 640, y: 660 }],
     speed: 0,
     range: 210,
-    color: '#0e7490',
+    color: '#22b8d4',
   },
 ];
 

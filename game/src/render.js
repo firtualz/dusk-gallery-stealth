@@ -14,16 +14,24 @@ import {
 } from './config.js';
 import { isInShadow, rayBlockDistance } from './world.js';
 
-const FLOOR_DARK = '#241b12';
-const FLOOR_LIGHT = '#2e2417';
-const SHADOW_FILL = 'rgba(8, 6, 4, 0.55)';
-const WALL_FILL = '#4a3a28';
-const WALL_EDGE = '#8a6d3b';
+const FLOOR_DARK = '#4a3a24';
+const FLOOR_LIGHT = '#5d4b31';
+const SHADOW_FILL = 'rgba(10, 12, 28, 0.42)';
+const WALL_FILL = '#6b5636';
+const WALL_EDGE = '#c9a227';
 
 function drawFloor(ctx) {
   ctx.fillStyle = FLOOR_DARK;
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-  // Wooden floorboards.
+  // Wooden floorboards: alternating light and dark plank rows so the floor
+  // reads as warm wood, not one flat muddy brown, even at 300 px wide.
+  let row = 0;
+  for (let y = 24; y < CANVAS_HEIGHT; y += 40, row++) {
+    if (row % 2 === 0) {
+      ctx.fillStyle = FLOOR_LIGHT;
+      ctx.fillRect(0, y, CANVAS_WIDTH, 40);
+    }
+  }
   ctx.strokeStyle = 'rgba(0, 0, 0, 0.25)';
   ctx.lineWidth = 1;
   for (let y = 24; y < CANVAS_HEIGHT; y += 40) {
@@ -41,7 +49,7 @@ function drawFloor(ctx) {
   // Warm lamp pools on the floor.
   for (const lamp of LAMPS) {
     const grad = ctx.createRadialGradient(lamp.x, lamp.y, 8, lamp.x, lamp.y, lamp.r);
-    grad.addColorStop(0, 'rgba(255, 196, 110, 0.20)');
+    grad.addColorStop(0, 'rgba(255, 196, 110, 0.28)');
     grad.addColorStop(1, 'rgba(255, 196, 110, 0)');
     ctx.fillStyle = grad;
     ctx.beginPath();
@@ -81,32 +89,32 @@ function drawWalls(ctx) {
 
 function drawCover(ctx, cover) {
   if (cover.kind === 'case') {
-    ctx.fillStyle = '#171310';
+    ctx.fillStyle = '#33291d';
     ctx.fillRect(cover.x, cover.y, cover.w, cover.h);
     ctx.strokeStyle = '#c9a227';
     ctx.lineWidth = 2;
     ctx.strokeRect(cover.x + 1, cover.y + 1, cover.w - 2, cover.h - 2);
-    ctx.fillStyle = 'rgba(201, 162, 39, 0.25)';
+    ctx.fillStyle = 'rgba(201, 162, 39, 0.35)';
     ctx.fillRect(cover.x + 6, cover.y + 6, cover.w - 12, cover.h - 12);
   } else if (cover.kind === 'statue') {
-    ctx.fillStyle = '#3d3a35';
+    ctx.fillStyle = '#6f6a5e';
     ctx.beginPath();
     ctx.arc(cover.x + cover.w / 2, cover.y + cover.h / 2, cover.w / 2 - 4, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#8a8578';
+    ctx.strokeStyle = '#b8b2a2';
     ctx.lineWidth = 2;
     ctx.stroke();
-    ctx.fillStyle = '#57534a';
+    ctx.fillStyle = '#8a8474';
     ctx.beginPath();
     ctx.arc(cover.x + cover.w / 2, cover.y + cover.h / 2, cover.w / 4, 0, Math.PI * 2);
     ctx.fill();
   } else {
     // plant: a big dark-green bush in a pot
-    ctx.fillStyle = '#1d3a1a';
+    ctx.fillStyle = '#2e5c26';
     ctx.beginPath();
     ctx.arc(cover.x + cover.w / 2, cover.y + cover.h / 2, cover.w / 2 - 3, 0, Math.PI * 2);
     ctx.fill();
-    ctx.fillStyle = '#2c5a24';
+    ctx.fillStyle = '#4a8a3a';
     ctx.beginPath();
     ctx.arc(cover.x + cover.w / 2 - 8, cover.y + cover.h / 2 - 6, 10, 0, Math.PI * 2);
     ctx.arc(cover.x + cover.w / 2 + 9, cover.y + cover.h / 2 + 5, 9, 0, Math.PI * 2);
@@ -180,11 +188,11 @@ function drawVisionCone(ctx, guard) {
   const alertness = guard.meter / ALARM_METER;
   const chasing = guard.mode === 'chase';
   const fill = chasing
-    ? 'rgba(239, 68, 68, 0.30)'
+    ? 'rgba(239, 68, 68, 0.38)'
     : alertness > 0.6
-      ? 'rgba(249, 115, 22, 0.26)'
-      : 'rgba(250, 204, 21, 0.20)';
-  const edge = chasing ? 'rgba(239, 68, 68, 0.65)' : 'rgba(250, 204, 21, 0.45)';
+      ? 'rgba(249, 115, 22, 0.34)'
+      : 'rgba(250, 204, 21, 0.30)';
+  const edge = chasing ? 'rgba(239, 68, 68, 0.75)' : 'rgba(250, 204, 21, 0.60)';
   // Raycast the cone: each edge ray stops at the first wall or cover, so
   // the cone never shines through a wall.
   const steps = 26;
@@ -255,7 +263,7 @@ function drawPlayer(ctx, player, time) {
   // The thief: a dark teal hooded figure with a gold trim.
   const blink = player.graceTimer > 0 && Math.floor(time * 8) % 2 === 0;
   if (!blink) {
-    ctx.fillStyle = '#0f766e';
+    ctx.fillStyle = '#14b8a6';
     ctx.beginPath();
     ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
     ctx.fill();
@@ -268,16 +276,26 @@ function drawPlayer(ctx, player, time) {
     ctx.moveTo(player.x, player.y);
     ctx.lineTo(player.x + Math.cos(player.angle) * (player.radius + 6), player.y + Math.sin(player.angle) * (player.radius + 6));
     ctx.stroke();
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 11px sans-serif';
+    // "YOU" tag on a dark pill so the player reads at 300 px wide.
+    ctx.font = 'bold 13px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('YOU', player.x, player.y - player.radius - 8);
+    const labelY = player.y - player.radius - 8;
+    const labelW = ctx.measureText('YOU').width + 12;
+    ctx.fillStyle = 'rgba(8, 6, 4, 0.75)';
+    ctx.beginPath();
+    ctx.roundRect(player.x - labelW / 2, labelY - 13, labelW, 17, 8);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('YOU', player.x, labelY);
   }
 }
 
 function drawCoins(ctx, coins, time) {
   for (const coin of coins) {
-    const age = time - coin.bornAt;
+    // A frozen shot pose uses bornAt -1: draw the ripple at a fixed,
+    // clearly visible age (0.5 s) instead of a negative age.
+    const age = coin.bornAt < 0 ? 0.5 : time - coin.bornAt;
+    if (age < 0 || age > 2.5) continue;
     const radius = 6 + age * 46;
     ctx.strokeStyle = `rgba(250, 204, 21, ${Math.max(0, 0.8 - age * 0.5)})`;
     ctx.lineWidth = 2;
@@ -344,8 +362,8 @@ function drawHud(ctx, state) {
   ctx.fillText('WASD move  •  SHIFT sneak  •  CLICK throw a coin  •  E steal  •  R restart  •  M mute', CANVAS_WIDTH / 2, CANVAS_HEIGHT - 8);
 }
 
-function drawOverlay(ctx, title, lines, accent) {
-  ctx.fillStyle = 'rgba(8, 6, 4, 0.78)';
+function drawOverlay(ctx, title, lines, accent, dim = 0.78) {
+  ctx.fillStyle = `rgba(8, 6, 4, ${dim})`;
   ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
   ctx.textAlign = 'center';
   ctx.fillStyle = accent;
@@ -400,6 +418,7 @@ export function renderGame(ctx, state, time) {
         'Press R to play again.',
       ],
       '#4ade80',
+      0.45, // light dim so the level still reads behind the win screen
     );
   } else if (state.phase === 'lost') {
     drawOverlay(
